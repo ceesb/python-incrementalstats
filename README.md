@@ -17,7 +17,7 @@ A few incremental 1st order statistics in numpy. Currently:
 ## Option 1: Checkout hackable project
 
     python -m pip install --upgrade pip
-    git clone https://github.com/ceeesb/python-incrementalstats
+    git clone https://github.com/ceesb/python-incrementalstats
     pip install -e python-incrementalstats
     cd python-incrementalstats
 
@@ -25,7 +25,7 @@ Now all the changes you make to this project source code are "live".
 
 ## Option 2: Build a wheel
 
-    git clone https://github.com/ceeesb/python-incrementalstats
+    git clone https://github.com/ceesb/python-incrementalstats
     cd python-incrementalstats
     python -m build
 
