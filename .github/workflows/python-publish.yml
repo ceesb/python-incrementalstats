@@ -1,13 +1,12 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
-name: Python package
+name: Python publish
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+      tags:
+        - 'v*'  # Only run on version tags like v1.2.3
 
 jobs:
   build:
@@ -40,4 +39,33 @@ jobs:
         python -m pip install scipy
         pip install -e .
         pytest
-        
+    - name: Install build tools
+      run: |
+          pip install build
+    - name: Build the package
+      run: |
+        python -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  publish-to-pypi:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/incrementalstats 
+    permissions:
+      id-token: write
+      
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
