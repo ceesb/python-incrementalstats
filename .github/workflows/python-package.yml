@@ -38,4 +38,5 @@ jobs:
     - name: Test with pytest
       run: |
         python -m pip install scipy
+        pip install -e .
         pytest
