@@ -1,5 +1,7 @@
 # Incremental stats
 
+`pip install incrementalstats`
+
 A few incremental 1st order statistics in numpy. Currently:
 
 - Correlation (Pearson)
