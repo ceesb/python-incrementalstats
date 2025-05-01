@@ -40,8 +40,9 @@ jobs:
         python -m pip install scipy
         pip install -e .
         pytest
-        - name: Install build tools
-        run: pip install build
+    - name: Install build tools
+      run: |
+          pip install build
     - name: Build the package
       run: |
         python -m build
