@@ -12,3 +12,7 @@ Currently:
 - Variance
 - Mean
 - Welch-t
+
+# Docs
+
+API docs [here](https://ceesb.github.io/python-incrementalstats/incrementalstats.html).
