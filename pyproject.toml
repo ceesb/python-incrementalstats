@@ -1,6 +1,6 @@
 [project]
 name = "incrementalstats"
-version = "1.0.3"
+version = "1.0.4"
 authors = [
   { name = "Cees-Bart Breunesse", email = "ceeesb@gmail.com" },
 ]
