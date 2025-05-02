@@ -26,7 +26,7 @@ class IncrementalCovarianceCorrelation:
     for row in range(nX):
         ic.update(m1[row,:], m2[row,:])
 
-    reference_covariance = (1 / (nX - 1)) * np.matmul((m1 - np.mean(m1, axis=0)).T, (m2 - np.mean(m2, axis=0)))
+    reference_covariance = (1 / (nX - 1)) * np.matmul((m1 - np.getMean()(m1, axis=0)).T, (m2 - np.getMean()(m2, axis=0)))
     reference_m1_stddev = np.std(m1, axis=0, ddof=1)
     reference_m2_stddev = np.std(m2, axis=0, ddof=1)
     reference_1_over_m1_stddev = (1 / numpy_m1_stddev).reshape(numpy_m1_stddev.size, 1)
@@ -41,57 +41,61 @@ class IncrementalCovarianceCorrelation:
 
     def __init__(self, nX, nY):
         """Initialize with the #columns for matrices A and B"""
-        self.nX = nX
-        self.nY = nY
-        self.imX = IncrementalMeanVariance(nX)
-        self.imY = IncrementalMeanVariance(nY)
-        self.cov = np.zeros((nX, nY), dtype=np.float64)
-        self.n = 0
+        self._nX = nX
+        self._nXY = nY
+        self._imX = IncrementalMeanVariance(nX)
+        self._imY = IncrementalMeanVariance(nY)
+        self._cov = np.zeros((nX, nY), dtype=np.float64)
+        self._n = 0
 
     def update(self, x, y):
         """Updates the covariance matrix with a single row of matrix A and a single row of matrix B"""
-        if len(x) != self.nX:
+        if len(x) != self._nX:
             raise Exception("wrong x length")
-        if len(y) != self.nY:
+        if len(y) != self._nXY:
             raise Exception("wrong y length")
 
-        self.n += 1
-        f = (self.n - 1) / self.n
+        self._n += 1
+        f = (self._n - 1) / self._n
 
-        mfX = (x - self.imX.mean) * f
-        mfY = y - self.imY.mean
+        mfX = (x - self._imX.getMean()) * f
+        mfY = y - self._imY.getMean()
 
-        self.cov += np.tensordot(mfX, mfY, axes=0)
+        self._cov += np.tensordot(mfX, mfY, axes=0)
 
-        self.imX.update(x)
-        self.imY.update(y)
+        self._imX.update(x)
+        self._imY.update(y)
 
     def add(self, x: IncrementalCovarianceCorrelation):
         """Merges another object of IncrementalCovarianceCorrelation into this co-variance matrix. This is useful in
         parallelized computations, where different nodes compute co-variances over different
         ranges of rows"""
-        n = self.n + x.n
-        f = (self.n * x.n ** 2 + x.n * self.n ** 2) / (n ** 2)
+        n = self._n + x._n
+        f = (self._n * x._n ** 2 + x._n * self._n ** 2) / (n ** 2)
 
-        deltaX = self.imX.mean - x.imX.mean
+        deltaX = self._imX.getMean() - x._imX.getMean()
         deltaX = deltaX.reshape(deltaX.size, 1) * f
 
-        deltaY = self.imY.mean - x.imY.mean
+        deltaY = self._imY.getMean() - x._imY.getMean()
         deltaY = deltaY.reshape(1, deltaY.size)
 
-        self.cov += x.cov + deltaX * deltaY
-        self.n = n
-        self.imX.add(x.imX)
-        self.imY.add(x.imY)
+        self._cov += x._cov + deltaX * deltaY
+        self._n = n
+        self._imX.add(x._imX)
+        self._imY.add(x._imY)
 
     def getCovariance(self):
         """Returns the scaled co-variance matrix with 1 degree of freedom"""
-        return 1 / (self.n - 1) * self.cov
+        return 1 / (self._n - 1) * self._cov
 
     def getCorrelation(self):
         """Returns Pearson's correlation matrix"""
-        sX = 1 / np.sqrt(self.imX.getVariance())
+        sX = 1 / np.sqrt(self._imX.getVariance())
         sX = sX.reshape(sX.size, 1)
-        sY = 1 / np.sqrt(self.imY.getVariance())
+        sY = 1 / np.sqrt(self._imY.getVariance())
         sY = sY.reshape(1, sY.size)
-        return 1 / (self.n - 1) * self.cov * sX * sY
+        return 1 / (self._n - 1) * self._cov * sX * sY
+
+    def getN(self):
+        """Number of observations"""
+        return self._n

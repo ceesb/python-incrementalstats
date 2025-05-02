@@ -64,10 +64,10 @@ class IncrementalCovarianceCorrelationTest(unittest.TestCase):
         self.assertTrue(np.allclose(ic1.getCovariance(), numpy_covariance))
         self.assertTrue(np.allclose(ic1.getCorrelation(), numpy_correlation))
 
-        self.assertTrue(np.allclose(ic1.imX.getMean(), ic.imX.getMean()))
-        self.assertTrue(np.allclose(ic1.imY.getMean(), ic.imY.getMean()))
-        self.assertTrue(np.allclose(ic1.imX.getVariance(), ic.imX.getVariance()))
-        self.assertTrue(np.allclose(ic1.imY.getVariance(), ic.imY.getVariance()))
+        self.assertTrue(np.allclose(ic1._imX.getMean(), ic._imX.getMean()))
+        self.assertTrue(np.allclose(ic1._imY.getMean(), ic._imY.getMean()))
+        self.assertTrue(np.allclose(ic1._imX.getVariance(), ic._imX.getVariance()))
+        self.assertTrue(np.allclose(ic1._imY.getVariance(), ic._imY.getVariance()))
         
 if __name__ == "__main__":
     unittest.main(verbosity=2)
