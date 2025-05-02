@@ -26,9 +26,10 @@ jobs:
       # ADJUST THIS: install all dependencies (including pdoc)
       - run: |
             pip install pdoc
+            if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
             pip install -e .
             pdoc incrementalstats -o docs
-            
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: docs/
